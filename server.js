@@ -8,11 +8,24 @@ app.use(express.json())
 
 app.use(express.static('public'))
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../index.html'))
+//initializing the rollbar
+
+var Rollbar = require('rollbar')
+var rollbar = new Rollbar({
+  accessToken: '9b2420e4ab844ae5b54e7cb38295dc1b',
+  captureUncaught: true,
+  captureUnhandledRejections: true,
 })
 
-app.get('http://localhost:3000/api/robots', (req, res) => {
+// record a generic message and send it to Rollbar
+rollbar.log('Hello world!')
+
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'))
+})
+
+app.get('/api/robots', (req, res) => {
     try {
         res.status(200).send(botsArr)
     } catch (error) {
@@ -21,7 +34,7 @@ app.get('http://localhost:3000/api/robots', (req, res) => {
     }
 })
 
-app.get('http://localhost:3000/api/robots/five', (req, res) => {
+app.get('/api/robots/five', (req, res) => {
     try {
         let shuffled = shuffleArray(bots)
         let choices = shuffled.slice(0, 5)
@@ -33,7 +46,7 @@ app.get('http://localhost:3000/api/robots/five', (req, res) => {
     }
 })
 
-app.post('http://localhost:3000/api/duel', (req, res) => {
+app.post('/api/duel', (req, res) => {
     try {
         // getting the duos from the front end
         let {compDuo, playerDuo} = req.body
@@ -64,7 +77,7 @@ app.post('http://localhost:3000/api/duel', (req, res) => {
     }
 })
 
-app.get('http://localhost:3000/api/player', (req, res) => {
+app.get('/api/player', (req, res) => {
     try {
         res.status(200).send(playerRecord)
     } catch (error) {
